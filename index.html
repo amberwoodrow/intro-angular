@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html ng-app="myapp">
+  <head>
+    <meta charset="utf-8">
+    <title>Hello, World!</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="main.css">
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="row">
+        <h3>Iterating examples</h3>
+        <div class="col-md-3">
+          <p>Iterate over an array</p>
+          <ul ng-controller="HelloController">
+            <li ng-repeat="name in names">
+              {{name}}
+             </li>
+          </ul>
+        </div>
+
+        <div class="col-md-3">
+          <p>Iterate over an array of sybmbols.</p>
+          <p>display ascii characters with Angular</p>
+          <ul ng-controller="HelloController">
+            <li ng-repeat="symbol in symbols">
+              <span ng-bind-html="symbol | unsafe">
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="col-md-3">
+          <p>Iterate over array with duplicate characters</p>
+          <ul ng-controller="HelloController">
+            <li ng-repeat="num in nums track by $index">
+              {{num}}
+             </li>
+          </ul>
+        </div>
+
+        <div class="col-md-3">
+          <p>Iterate over an object</p>
+          <ul ng-controller="HelloController">
+            <li ng-repeat="(key, value) in obj">
+              {{key}} : {{value}}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <h3>ng-show and ng-hide examples</h3>
+          <div ng-show="3 + 4 == 5">
+            <p>3 + 4 isn't 5, don't show</p>
+          </div>
+
+          <div ng-show="3 + 4 == 7">
+            <p>3 + 4 is 7, do show</p>
+          </div>
+
+          <div ng-hide="3 + 4 == 5">
+            <p>3 + 4 isn't 5, don't hide</p>
+          </div>
+
+          <div ng-hide="3 + 4 == 7">
+            <p>3 + 4 is 7, do hide</p>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <h3>Simple password validation, and ng-class use</h3>
+          <div>
+            <input type="password" ng-model="password" placeholder="Enter a super secret password!" class="form-control">
+            <p class="pass-size" ng-hide="password.length==0" ng-init="password=''" ng-class="{passTooShort: password.length < 6}">
+              Your password is {{password.length}} long.
+            </p>
+            <p ng-if="password.length >= 6">
+              <button class="btn btn-default">Signup</button>
+            </p>
+            <p ng-hide="password.length >= 6">
+              Password must be at least 6 characters long
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Sort camras</h3>
+        <div class="form-group">
+          <label for="camraSelect">Sort by</label>
+          <select name="camraSelect" ng-model="data.camraSelect" class="form-control">
+            <option value="rating">Rating</option>
+            <option value="price">Price</option>
+          </select>
+        </div>
+
+        <!-- ng-options="font for font in webfonts | orderBy:'toString()' -->
+
+        <div class="row">
+          <div ng-controller="HelloController">
+            <div ng-repeat="camra in camras | orderBy:data.camraSelect:true" class="col-md-4">
+              <ul class="camra-ul row">
+                <li class="camra-li" ng-repeat="(key, value) in camra">
+                  <span ng-if="key=='image'" class="col-md-6">
+                    <img ng-src="{{value}}">
+                  </span>
+                  <span ng-if="key=='title'">{{value}}</span>
+                  <span ng-if="key!='title'">
+                    <span ng-if="key!='image'" class="col-md-5">
+                      <span ng-if="key=='price'"><b>{{key}}:</b> {{value | currency}}</span>
+                      <span ng-if="key!='price'"><b>{{key}}:</b> {{value}}</span>
+                    </span>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.4/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.4/angular-sanitize.min.js"></script>
+    <script>
+    var module = angular.module("myapp", ['ngSanitize']);
+    module.controller("HelloController", function($scope, $sce) {
+      $scope.names = ["Harry", "Ron", "Hermione", "Sirius", "Hedwig", "Tonks"];
+      $scope.symbols = ["&spades;", "&clubs;", "&hearts;", "&diams;"];
+      $scope.nums = [1,1,2,5,6,9,9,9];
+      $scope.obj = {'key1' : 'val1', 'key2' : 'val2', 'key3' : 'val3'};
+
+      $scope.camras = [
+          {
+            title: "Nikon D3100 DSLR",
+            image: "http://ecx.images-amazon.com/images/I/713u2gDQqML._SX522_.jpg",
+            rating: 3.4,
+            price: 369.99,
+            onSale: true
+          },
+          {
+            title: "Canon EOS 70D",
+            image: "http://ecx.images-amazon.com/images/I/81U00AkAUWL._SX522_.jpg",
+            rating: 2.0,
+            price: 1099.0,
+            onSale: false
+          },
+          {
+            title: "Nikon D810A",
+            image:"http://ecx.images-amazon.com/images/I/91wtXIfLl2L._SX522_.jpg",
+            rating: 4.2,
+            price: 3796.95,
+            onSale: true
+          }
+        ];
+
+      });
+
+      module.filter('unsafe', function($sce) {
+        return function(val) {
+            return $sce.trustAsHtml(val);
+        };
+      });
+
+    </script>
+  </body>
+</html>
